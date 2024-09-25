@@ -19,7 +19,3 @@ module "ssm_parameters" {
 
   environment = var.environment
 }
-
-
-
-
