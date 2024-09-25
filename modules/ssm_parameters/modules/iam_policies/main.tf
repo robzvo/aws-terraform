@@ -1,7 +1,7 @@
-resource "aws_iam_policy" "ssm_param_read_only_policy" {
+resource "aws_iam_policy" "snowflake_aws_credentials_read_only_policy" {
   name        = "ssm-param-read-only-${var.environment}"
   path        = "/"
-  description = "My test policy"
+  description = "Read only access for Snowflake AWS credentials in ${var.environment} environment"
 
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.

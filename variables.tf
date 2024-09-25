@@ -6,6 +6,10 @@ variable "terraform" {
 
 }
 
+variable "aws_region" {
+
+}
+
 variable "lambda-function-1" {
   default = {
     Name           = "lambda-function-1"
