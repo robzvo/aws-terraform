@@ -21,3 +21,19 @@ module "ssm_parameters" {
   environment = var.environment
   aws_region = var.aws_region
 }
+
+#Systems Manager Parameters Module
+module "code_build" {
+  source = "./modules/code_build"
+
+  environment = var.environment
+  terraform = var.terraform
+}
+
+#Systems Manager Parameters Module
+module "lambdas" {
+  source = "./modules/lambda"
+
+  environment = var.environment
+  terraform = var.terraform
+}
