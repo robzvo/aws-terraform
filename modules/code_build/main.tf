@@ -15,8 +15,9 @@ locals {
   region     = data.aws_region.this.name
 }
 
-resource "aws_iam_role" "example_lambda_layer" {
-  name = "ExampleLambdaLayerCodeBuildRole"
+# IAM Role for AWS CodeBuild to use
+resource "aws_iam_role" "code_build_iam_role" {
+  name = "tf-code-build-lambda-layer-iam-role-${var.environment}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -31,9 +32,10 @@ resource "aws_iam_role" "example_lambda_layer" {
   })
 }
 
-resource "aws_iam_role_policy" "example_lambda_layer" {
-  name = "ExampleLambdaLayerCodeBuildPolicy"
-  role = aws_iam_role.example_lambda_layer.id
+# IAM Policy to be attached to AWS CodeBuild Role
+resource "aws_iam_role_policy" "code_build_iam_policy" {
+  name = "tf-code-build-lambda-layer-policy-${var.environment}"
+  role = aws_iam_role.code_build_iam_role.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -57,10 +59,11 @@ resource "aws_iam_role_policy" "example_lambda_layer" {
   })
 }
 
-resource "aws_codebuild_project" "example_lambda_layer" {
-  name         = "example-lambda-layer-build"
-  description  = "Build project for example-lambda-layer"
-  service_role = aws_iam_role.example_lambda_layer.arn
+# AWS CodeBuild Project for NumPy Lambda Layer
+resource "aws_codebuild_project" "numpy_lambda_layer" {
+  name         = "numpy-lambda-layer-build-${var.environment}"
+  description  = "Build project for numpy-lambda-layer-build-${var.environment}"
+  service_role = aws_iam_role.code_build_iam_role.arn
   artifacts {
     type = "NO_ARTIFACTS"
   }
@@ -71,11 +74,11 @@ resource "aws_codebuild_project" "example_lambda_layer" {
     image_pull_credentials_type = "CODEBUILD"
     environment_variable {
       name  = "LAYER_NAME"
-      value = "test-lambda-layer"
+      value = "numpy-lambda-layer-${var.environment}"
     }
   }
   source {
-    buildspec = file("${path.module}/specs/test-lambda-layer.yml")
+    buildspec = file("${path.module}/specs/numpy-lambda-layer.yml")
     type      = "NO_SOURCE"
   }
 }

@@ -1,11 +1,11 @@
-data "aws_lambda_layer_version" "example_lambda_layer" {
-  layer_name = "test-lambda-layer"
+data "aws_lambda_layer_version" "numpy_lambda_layer" {
+  layer_name = "numpy-lambda-layer-${var.environment}"
 }
 
 data "archive_file" "layer_example_zip" {
   type             = "zip"
-  source_dir       = "${path.module}/layer-example"
-  output_path      = "${path.module}/tmp/layer-example.zip"
+  source_dir       = "${path.module}/numpy-example"
+  output_path      = "${path.module}/tmp/numpy-example-${var.environment}.zip"
   output_file_mode = "0666"
 }
 
@@ -13,7 +13,7 @@ data "aws_iam_policy" "lambda_basic_execution" {
   name = "AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_iam_role" "layer_example" {
+resource "aws_iam_role" "lambda_role" {
   name = "LayerExampleLambdaExecutionRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -30,13 +30,13 @@ resource "aws_iam_role" "layer_example" {
   managed_policy_arns = [data.aws_iam_policy.lambda_basic_execution.arn]
 }
 
-resource "aws_lambda_function" "layer_example" {
-  function_name = "layer-example"
-  role          = aws_iam_role.layer_example.arn
-  description   = "Function demonstrating the use of a Lambda layer"
+resource "aws_lambda_function" "numpy_lambda_example" {
+  function_name = "numpy-lambda-example-${var.environment}"
+  role          = aws_iam_role.lambda_role.arn
+  description   = "Function demonstrating the use of NumPy Lambda layer"
   filename      = data.archive_file.layer_example_zip.output_path
   handler       = "index.lambda_handler"
-  layers        = [data.aws_lambda_layer_version.example_lambda_layer.arn]
+  layers        = [data.aws_lambda_layer_version.numpy_lambda_layer.arn]
   runtime       = "python3.11"
   # source_code_hash is required to detect changes to Lambda code/zip
   source_code_hash = data.archive_file.layer_example_zip.output_base64sha256
