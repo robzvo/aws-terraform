@@ -1,7 +1,0 @@
-variable "environment" {
-
-}
-
-variable "terraform" {
-
-}
