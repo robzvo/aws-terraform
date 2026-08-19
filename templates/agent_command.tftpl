@@ -1,0 +1,27 @@
+/bin/bash -c "
+mkdir -p $DAGSTER_HOME && echo 'instance_class:
+  module: dagster_cloud
+  class: DagsterCloudAgentInstance
+
+dagster_cloud_api:
+  url: \"https://${dagster_organization}.agent.dagster.cloud\"
+  agent_token: \"${agent_token}\"
+  ${deployment_config}
+  branch_deployments: ${branch_deployments}
+
+user_code_launcher:
+  module: dagster_cloud.workspace.ecs
+  class: EcsUserCodeLauncher
+  config:
+    cluster: ${cluster}
+    subnets: [${subnets}]
+    service_discovery_namespace_id: ${service_discovery_namespace_id}
+    execution_role_arn: ${execution_role_arn}
+    task_role_arn: ${task_role_arn}
+    log_group: ${log_group}
+    requires_healthcheck: ${requires_healthcheck}
+    code_server_metrics:
+      enabled: ${code_server_metrics_enabled}
+    agent_metrics:
+      enabled: ${agent_metrics_enabled}
+' > $DAGSTER_HOME/dagster.yaml && dagster-cloud agent run"
