@@ -3,7 +3,7 @@ locals {
   template_version = "1.13.18"
 
   # CFN pseudo-parameters AWS::Region / AWS::AccountId
-  region     = data.aws_region.current.name
+  region     = data.aws_region.current.region
   account_id = data.aws_caller_identity.current.account_id
 
   # CFN condition: IsDeploymentEmpty
